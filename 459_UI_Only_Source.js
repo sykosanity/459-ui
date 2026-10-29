@@ -284,26 +284,30 @@ body.m459-on-home #menu-path{display:none!important}
     if(p.style.left!==left)p.style.left=left;
     if(p.style.top!==top)p.style.top=top;
   }
-  let hideTimer=0;
+  let hideToken=0;
   function show(d){
-    if(d)lastData=d;
     const shouldShow=!!(d&&d.visible&&visibleInGame);
     if(!shouldShow){
-      if(hideTimer)return;
-      hideTimer=setTimeout(()=>{hideTimer=0;if(!lastData||!lastData.visible||!visibleInGame)p.style.visibility='hidden';},1400);
+      if(p.style.display!=='block')return;
+      const token=++hideToken;
+      setTimeout(()=>{
+        if(token!==hideToken)return;
+        p.style.visibility='hidden';
+      },2500);
       return;
     }
-    if(hideTimer){clearTimeout(hideTimer);hideTimer=0;}
+    hideToken++;
+    lastData=d;
     for(const key of ['name','sid','status','health','armor','speed','distance','coords','job','grade','radio','phone']){
       const value=string(d[key]);if(fields[key]&&fields[key].textContent!==value)fields[key].textContent=value;
     }
     const hp=clamp(d.healthPercent)+'%',ap=clamp(d.armorPercent)+'%';
     if(healthFill.style.width!==hp)healthFill.style.width=hp;
     if(armorFill.style.width!==ap)armorFill.style.width=ap;
-    const wasHidden=p.style.display!=='block'||p.style.visibility==='hidden';
-    p.style.display='block';
-    p.style.visibility='visible';
-    if(wasHidden)position();
+    const first=p.style.display!=='block'||p.style.visibility==='hidden';
+    if(p.style.display!=='block')p.style.display='block';
+    if(p.style.visibility!=='visible')p.style.visibility='visible';
+    if(first)position();
   }
   window.addEventListener('message',ev=>{
     const d=ev.data;
@@ -311,12 +315,8 @@ body.m459-on-home #menu-path{display:none!important}
     if(d.action==='m459PlayerPeek'){show(d);return}
     if(d.action==='m459HudMode'){
       visibleInGame=d.menuVisible!==false;
-      if(!visibleInGame){
-        if(!hideTimer)hideTimer=setTimeout(()=>{hideTimer=0;if(!visibleInGame)p.style.visibility='hidden';},1400);
-      } else if(lastData&&lastData.visible){
-        if(hideTimer){clearTimeout(hideTimer);hideTimer=0;}
-        show(lastData);
-      }
+      if(!visibleInGame) show({visible:false});
+      else if(lastData&&lastData.visible) show(lastData);
       return;
     }
     if(d.action==='m459Position')position();
