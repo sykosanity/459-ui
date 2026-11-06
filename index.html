@@ -526,4 +526,45 @@ body.m459-on-home #menu-path{display:none!important}
   };
 })();
 </script>
+<script id="m459-esp-canvas">
+(function(){
+  if(window.__m459EspReady2) return;
+  window.__m459EspReady2=true;
+  let canvas, ctx, esp={enabled:false,lines:[],labels:[]}, raf=0;
+  const ensure=()=>{
+    if(canvas || !document.body) return;
+    canvas=document.createElement("canvas");
+    canvas.style.cssText="position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2147483000";
+    document.body.appendChild(canvas);
+    ctx=canvas.getContext("2d");
+    window.addEventListener("resize",()=>{ if(canvas){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; } });
+  };
+  const frame=()=>{
+    raf=0;
+    if(!esp.enabled || !ctx){ if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+    const vw=window.innerWidth||canvas.clientWidth||0, vh=window.innerHeight||canvas.clientHeight||0;
+    if(vw>0&&vh>0&&(canvas.width!==vw||canvas.height!==vh)){canvas.width=vw;canvas.height=vh}
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const w=canvas.width,h=canvas.height,lines=esp.lines||[];
+    ctx.lineWidth=1.6;
+    for(let i=0;i<lines.length;i++){const ln=lines[i];ctx.beginPath();ctx.strokeStyle=ln.g?"rgba(145,145,145,0.95)":"rgba(255,255,255,0.95)";ctx.moveTo(ln.x1*w,ln.y1*h);ctx.lineTo(ln.x2*w,ln.y2*h);ctx.stroke();}
+    const labels=esp.labels||[];
+    ctx.font="bold 13px Segoe UI,sans-serif";ctx.textAlign="center";ctx.shadowColor="black";ctx.shadowBlur=3;
+    for(let i=0;i<labels.length;i++){const lb=labels[i];ctx.fillStyle=lb.g?"rgb(145,145,145)":"rgb(230,220,255)";ctx.fillText(lb.t,lb.x*w,lb.y*h);}
+    ctx.shadowBlur=0;
+    raf=requestAnimationFrame(frame);
+  };
+  window.m459EspSet=function(raw){
+    let d=raw;
+    if(typeof d==="string"){try{d=JSON.parse(d)}catch(e){return}}
+    if(d&&d.data&&d.data.action)d=d.data;
+    if(!d||d.action!=="m459Esp")return;
+    esp=d;
+    if(!esp.enabled) return;
+    ensure();
+    if(ctx && !raf) raf=requestAnimationFrame(frame);
+  };
+  window.addEventListener("message",ev=>{window.m459EspSet(ev.data)});
+})();
+</script>
 </body></html>
