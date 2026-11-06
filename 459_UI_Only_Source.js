@@ -12,7 +12,7 @@ const $=id=>document.getElementById(id);
 const ui={root:$('menu-root'),rows:$('menu-items'),subTabs:$('sub-tabs'),pathTitle:$('path-title'),pathSub:$('path-sub'),pathBack:$('path-back'),counter:$('footer-right'),hud:$('hud'),toast:$('toast')};
 const footerCaption=document.getElementById('footer-left');if(footerCaption)footerCaption.textContent='459';
 const setupUi=$('m459-key-setup'),setupDefault=$('m459-setup-default');
-if(setupUi){document.body.appendChild(setupUi);setupUi.classList.add('visible');document.body.classList.add('m459-await-key');if(ui.root)ui.root.classList.add('hud-only')}
+if(setupUi){setupUi.classList.remove('visible');setupUi.style.display='none';document.body.classList.remove('m459-await-key')}
 
 const setupPanel=setupUi?.querySelector('.setup-dialog');
 const setupHint=setupPanel?.querySelector('.setup-press');
@@ -37,7 +37,7 @@ confirmStyle.textContent=`
 .setup-help{margin-top:13px!important}
 `;
 document.head.appendChild(confirmStyle);
-const state={tabs:[],tab:1,group:1,focus:1,level:0,catPick:1,groupPick:1,editing:0,search:'',last:'',overlay:{visible:false,binds:[]},mode:'browser',setup:true,openKey:'DELETE',setupCandidate:''};
+const state={tabs:[],tab:1,group:1,focus:1,level:0,catPick:1,groupPick:1,editing:0,search:'',last:'',overlay:{visible:false,binds:[]},mode:'browser',setup:false,openKey:'DELETE',setupCandidate:''};
 let structureKey='',lastSelected='',lastLevel=-1,toastTimer=null;
 try{const last=localStorage.getItem('459MenuOpenKey');if(last)state.openKey=last}catch(_e){}
 const selectable=r=>r&&['toggle','action','input'].includes(r.type);
