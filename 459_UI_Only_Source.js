@@ -297,19 +297,14 @@ body.m459-on-home #menu-path{display:none!important}
     if(p.style.left!==left)p.style.left=left;
     if(p.style.top!==top)p.style.top=top;
   }
-  let hideToken=0;
   function show(d){
     const shouldShow=!!(d&&d.visible&&visibleInGame);
     if(!shouldShow){
-      if(p.style.display!=='block')return;
-      const token=++hideToken;
-      setTimeout(()=>{
-        if(token!==hideToken)return;
-        p.style.visibility='hidden';
-      },2500);
+      lastData=null;
+      if(p.style.display!=='none')p.style.display='none';
+      if(p.style.visibility!=='hidden')p.style.visibility='hidden';
       return;
     }
-    hideToken++;
     lastData=d;
     for(const key of ['name','sid','status','health','armor','speed','distance','coords','job','grade','radio','phone']){
       const value=string(d[key]);if(fields[key]&&fields[key].textContent!==value)fields[key].textContent=value;
@@ -329,7 +324,6 @@ body.m459-on-home #menu-path{display:none!important}
     if(d.action==='m459HudMode'){
       visibleInGame=d.menuVisible!==false;
       if(!visibleInGame) show({visible:false});
-      else if(lastData&&lastData.visible) show(lastData);
       return;
     }
     if(d.action==='m459Position')position();
