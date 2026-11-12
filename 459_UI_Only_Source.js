@@ -351,7 +351,11 @@ body.m459-on-home #menu-path{display:none!important}
   const style = document.createElement('style');
   style.id = 'm459-extra-compact-key-setup-style';
   style.textContent = `
-    /* Keep the existing screen location; only shrink the box. */
+    #m459-key-setup.visible,
+    body.m459-await-key #m459-key-setup {
+      background: #090810d9 !important;
+      backdrop-filter: none !important;
+    }
     #m459-key-setup .setup-dialog {
       box-sizing: border-box !important;
       width: min(286px, calc(100vw - 32px)) !important;
@@ -366,7 +370,7 @@ body.m459-on-home #menu-path{display:none!important}
       overflow: hidden !important;
       color: #f6f1fa !important;
       font-family: Arial, Helvetica, sans-serif !important;
-      transform: translateY(24vh) !important;
+      transform: translateY(34vh) !important;
     }
     #m459-key-setup .setup-dialog > :not(.m459-compact-row) { display: none !important; }
     #m459-key-setup .m459-compact-row {
@@ -412,7 +416,7 @@ body.m459-on-home #menu-path{display:none!important}
       font-size: 10px !important; letter-spacing: -.2px !important;
     }
     @media (max-height: 570px) {
-      #m459-key-setup .setup-dialog { transform: translateY(14vh) !important; }
+      #m459-key-setup .setup-dialog { transform: translateY(22vh) !important; }
     }
     @media (max-width: 400px) {
       #m459-key-setup .setup-dialog { padding: 9px 11px !important; }
