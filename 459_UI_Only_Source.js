@@ -396,7 +396,7 @@ body.m459-on-home #menu-path{display:none!important}
       box-sizing: border-box !important; display: flex !important;
       align-items: center !important; justify-content: center !important;
       margin: 0 !important; padding: 0 8px !important;
-      width: 46px !important; min-width: 46px !important;
+      width: auto !important; min-width: 46px !important; max-width: 64px !important;
       height: 42px !important; min-height: 42px !important;
       border: 1px solid #8e5cb4 !important; border-radius: 12px !important;
       background: #342044 !important;
@@ -410,10 +410,10 @@ body.m459-on-home #menu-path{display:none!important}
       content: '—'; font-size: 16px; color: #b69ac9;
     }
     #m459-key-setup .m459-compact-tail .setup-key-preview.m459-long-key {
-      font-size: 12px !important; letter-spacing: 0 !important;
+      font-size: 8px !important; letter-spacing: -.3px !important;
     }
     #m459-key-setup .m459-compact-tail .setup-key-preview.m459-very-long-key {
-      font-size: 10px !important; letter-spacing: -.2px !important;
+      font-size: 7px !important; letter-spacing: -.3px !important;
     }
     @media (max-height: 570px) {
       #m459-key-setup .setup-dialog { transform: translateY(22vh) !important; }
