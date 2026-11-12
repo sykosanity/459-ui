@@ -365,8 +365,8 @@ body.m459-on-home #menu-path{display:none!important}
       padding: 10px 13px !important;
       border-radius: 18px !important;
       border: 1px solid #65467e !important;
-      background: linear-gradient(115deg, rgba(36,24,46,.86) 0%, rgba(23,17,31,.86) 68%, rgba(18,14,25,.86) 100%) !important;
-      box-shadow: 0 18px 45px rgba(0,0,0,.60) !important;
+      background: linear-gradient(115deg, #24182e 0%, #17111f 68%, #120e19 100%) !important;
+      box-shadow: 0 23px 56px rgba(0,0,0,.75) !important;
       overflow: hidden !important;
       color: #f6f1fa !important;
       font-family: Arial, Helvetica, sans-serif !important;
