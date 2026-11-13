@@ -410,6 +410,7 @@ body.m459-on-home #menu-path{display:none!important}
 <script>
 
 (function(){
+  if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') return;
   const host=window.M459Nexus;
   if(!host||!host.state)return;
   const state=host.state;
