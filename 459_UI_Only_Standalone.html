@@ -653,3 +653,75 @@ body.m459-on-home #menu-path{display:none!important}
 
 </script>
 </body></html>
+<script>
+/* Independent hosted HUD. No GTA text natives and no new render surface. */
+(function () {
+ 'use strict';
+ if (window.M459OverlayHud) return;
+ const make=(tag,cls,text)=>{const el=document.createElement(tag);el.className=cls||'';if(text!==undefined)el.textContent=String(text);return el};
+ const style=make('style');
+ style.textContent=`
+ #m459-spectators,#m459-freecam-hud{pointer-events:none;position:fixed;z-index:1100;font-family:Arial,Helvetica,sans-serif;color:#f4f2f8}
+ #m459-spectators[hidden],#m459-freecam-hud[hidden]{display:none!important}
+ #m459-spectators{top:24px;right:24px;width:230px;max-width:calc(100vw - 48px);background:rgba(16,17,20,.96);border-radius:6px;box-shadow:0 5px 18px #0003;overflow:hidden;font-size:12px}
+ #m459-spectators .hud-header{display:flex;align-items:center;gap:7px;height:32px;padding:0 8px;border-bottom:2px solid var(--ui-main,#a65aff);font-size:14px;font-weight:400}
+ #m459-spectators .hud-icon{font-size:18px;line-height:16px}
+ #m459-spectators .hud-count{margin-left:auto;font-size:11px;color:#b9adc9}
+ #m459-spectators .hud-rows{padding:4px 0}
+ #m459-spectators .hr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:6px;align-items:center;min-height:26px;padding:4px 8px;line-height:18px}
+ #m459-spectators .hud-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #m459-spectators .hud-key{color:#b9adc9;font-size:11px;font-variant-numeric:tabular-nums}
+ #m459-spectators .hud-admin{font-size:10px;color:#c58aff;font-weight:bold;letter-spacing:.4px}
+ #m459-spectators .hud-empty{padding:9px 10px;color:#aaa2b7;font-size:11px;line-height:17px}
+ #m459-freecam-hud{inset:0;text-align:center;text-shadow:0 1px 3px #000,0 0 3px #000}
+ #m459-freecam-hud .m459-freecam-crosshair{position:absolute;top:49%;left:50%;transform:translate(-50%,-50%);font-size:20px;line-height:1}
+ #m459-freecam-hud .m459-freecam-options{position:absolute;top:78%;left:50%;transform:translateX(-50%);width:min(480px,90vw);display:grid;gap:.5vh}
+ #m459-freecam-hud .m459-freecam-option{font-size:clamp(12px,1.7vh,19px);line-height:3.1vh;color:rgba(210,210,210,.65);white-space:nowrap}
+ #m459-freecam-hud .m459-freecam-option[data-selected="true"]{font-size:clamp(14px,2.1vh,23px);color:#fff}
+ `;
+ document.head.appendChild(style);
+ const cam=make('div');cam.id='m459-freecam-hud';cam.hidden=true;
+ const list=make('div');list.id='m459-spectators';list.hidden=true;
+ document.body.append(cam,list);
+ let lastMessage=0;
+ function update(data){
+  if(!data||typeof data!=='object')return;
+  lastMessage=Date.now();
+  if(data.freecam){
+   const fc=data.freecam, options=Array.isArray(fc.options)?fc.options.slice(0,10):[];
+   cam.hidden=fc.visible!==true||options.length===0;cam.replaceChildren();
+   if(!cam.hidden){
+    cam.append(make('div','m459-freecam-crosshair','•'));
+    const rows=make('div','m459-freecam-options');
+    const selected=Math.max(1,Math.min(options.length,Math.floor(Number(fc.selected)||1)));
+    options.forEach((name,i)=>{const row=make('div','m459-freecam-option',(i+1===selected?'— ':'')+String(name).slice(0,100)+(i+1===selected?' —':''));row.dataset.selected=String(i+1===selected);rows.append(row)});
+    cam.append(rows);
+   }
+  }
+  if(data.spectators){
+   const spec=data.spectators;list.hidden=spec.visible!==true;list.replaceChildren();
+   if(!list.hidden){
+    const players=spec.status==='ready'&&Array.isArray(spec.players)?spec.players:[];
+    const header=make('div','hud-header');header.append(make('span','hud-icon','◉'),make('span','','Spectators'),make('span','hud-count',spec.status==='ready'?players.length:'—'));
+    const rows=make('div','hud-rows');
+    if(spec.status!=='ready') rows.append(make('div','hud-empty',spec.status==='waiting'?'Waiting for spectator integration':'Spectator feed unavailable'));
+    else if(!players.length)rows.append(make('div','hud-empty','No spectators'));
+    else {
+     players.slice(0,12).forEach(player=>{
+      const row=make('div','hr'),name=make('span','hud-label',String(player.name||'Unknown').slice(0,80));
+      name.title=String(player.name||'Unknown');row.append(name,make('span','hud-key','#'+String(player.id??'?').slice(0,10)));
+      if(player.isAdmin===true)row.append(make('span','hud-admin','ADMIN'));
+      rows.append(row);
+     });
+     if(players.length>12)rows.append(make('div','hud-empty','+'+(players.length-12)+' more'));
+    }
+    list.append(header,rows);
+   }
+  }
+ }
+ window.addEventListener('message',event=>{if(event.data&&event.data.action==='m459Overlays')update(event.data)});
+ setInterval(()=>{if(Date.now()-lastMessage>2500){cam.hidden=true;list.hidden=true}},500);
+ window.M459OverlayHud={update};
+})();
+
+</script>
