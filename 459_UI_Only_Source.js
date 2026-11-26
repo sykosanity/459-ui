@@ -511,6 +511,7 @@ body.m459-on-home #menu-path{display:none!important}
  #m459-spectators .hud-key{color:#b9adc9;font-size:11px;font-variant-numeric:tabular-nums}
  #m459-spectators .hud-admin{font-size:10px;color:#c58aff;font-weight:bold;letter-spacing:.4px}
  #m459-spectators .hud-empty{padding:9px 10px;color:#aaa2b7;font-size:11px;line-height:17px}
+ #m459-spectators .hud-role-unknown{color:#99909f;font-size:9px;font-weight:normal}
  #m459-freecam-hud{inset:0;text-align:center;text-shadow:0 1px 3px #000,0 0 3px #000}
  #m459-freecam-hud .m459-freecam-crosshair{position:absolute;top:49%;left:50%;transform:translate(-50%,-50%);font-size:20px;line-height:1}
  #m459-freecam-hud .m459-freecam-options{position:absolute;top:78%;left:50%;transform:translateX(-50%);width:min(480px,90vw);display:grid;gap:.5vh}
@@ -539,21 +540,24 @@ body.m459-on-home #menu-path{display:none!important}
   if(data.spectators){
    const spec=data.spectators;list.hidden=spec.visible!==true;list.replaceChildren();
    if(!list.hidden){
-    const players=spec.status==='ready'&&Array.isArray(spec.players)?spec.players:[];
-    const header=make('div','hud-header');header.append(make('span','hud-icon','◉'),make('span','','Spectators'),make('span','hud-count',spec.status==='ready'?players.length:'—'));
+    const estimated=spec.status==='possible', available=estimated||spec.status==='ready';
+    const players=available&&Array.isArray(spec.players)?spec.players:[];
+    const header=make('div','hud-header');header.append(make('span','hud-icon','◉'),make('span','',estimated?'Possible spectators':'Spectators'),make('span','hud-count',available?players.length:'—'));
     const rows=make('div','hud-rows');
-    if(spec.status!=='ready') rows.append(make('div','hud-empty',spec.status==='waiting'?'Waiting for spectator integration':'Spectator feed unavailable'));
-    else if(!players.length)rows.append(make('div','hud-empty','No spectators'));
+    if(!available) rows.append(make('div','hud-empty',spec.status==='waiting'?'Waiting for spectator data':'Client scan unavailable'));
+    else if(!players.length)rows.append(make('div','hud-empty',estimated?'No possible spectators detected':'No spectators'));
     else {
      players.slice(0,12).forEach(player=>{
       const row=make('div','hr'),name=make('span','hud-label',String(player.name||'Unknown').slice(0,80));
       name.title=String(player.name||'Unknown');row.append(name,make('span','hud-key','#'+String(player.id??'?').slice(0,10)));
-      if(player.isAdmin===true)row.append(make('span','hud-admin','ADMIN'));
+      if(player.isAdmin===true){const badge=make('span','hud-admin','ADMIN');badge.title='Admin ID present in the received txAdmin roster';row.append(badge)}
+      else if(player.adminKnown===false){const badge=make('span','hud-admin hud-role-unknown','ROLE ?');badge.title='Staff status unavailable';row.append(badge)}
       rows.append(row);
      });
      if(players.length>12)rows.append(make('div','hud-empty','+'+(players.length-12)+' more'));
     }
     list.append(header,rows);
+    if(estimated)list.append(make('div','hud-empty','Client estimate · streamed players only'));
    }
   }
  }
